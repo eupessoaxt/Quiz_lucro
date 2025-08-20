@@ -4,54 +4,573 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quiz: Lucro Presumido</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ==============================
+       RESET & FONTE GLOBAL
+    ============================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    /* ==============================
+       CONTAINER PRINCIPAL
+    ============================== */
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .header {
+      padding: 30px;
+      text-align: center;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    /* ==============================
+       TÍTULOS
+    ============================== */
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: #333;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    /* ==============================
+       FORMULÁRIO DE USUÁRIO
+    ============================== */
+    #userSection {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    #userSection label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: #444;
+      text-align: left;
+    }
+
+    #userSection input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 2px solid #e1e5eb;
+      font-size: 16px;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+
+    #userSection input[type="text"]:focus {
+      border-color: #667eea;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* ==============================
+       BOTÕES
+    ============================== */
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn i {
+      margin-right: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #495057;
+      border: 1px solid #e1e5eb;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    /* ==============================
+       QUIZ
+    ============================== */
+    #quiz {
+      width: 100%;
+    }
+
+    .question {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .question:hover {
+      transform: translateY(-5px);
+    }
+
+    .question p {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid #e1e5eb;
+      background: #f8f9fa;
+      transition: all 0.2s ease;
+    }
+
+    .option:hover {
+      background: #eef2ff;
+      border-color: #667eea;
+    }
+
+    .option input[type="radio"] {
+      margin-right: 15px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .option label {
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    /* ==============================
+       FEEDBACK
+    ============================== */
+    .feedback {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 1rem;
+      display: none;
+      align-items: center;
+    }
+
+    .feedback i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .feedback.correct {
+      background-color: #e6f7ee;
+      color: #0c6b3f;
+      border: 1px solid #a3e9c4;
+      display: flex;
+    }
+
+    .feedback.incorrect {
+      background-color: #fef2f2;
+      color: #c53030;
+      border: 1px solid #fcb9b9;
+      display: flex;
+    }
+
+    /* ==============================
+       RESULTADO FINAL
+    ============================== */
+    #scoreArea {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-top: 30px;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .score-excellent {
+      color: #0c6b3f;
+      background: #e6f7ee !important;
+    }
+
+    .score-good {
+      color: #d97706;
+      background: #fef7e0 !important;
+    }
+
+    .score-regular {
+      color: #c53030;
+      background: #fef2f2 !important;
+    }
+
+    /* ==============================
+       PROGRESS BAR
+    ============================== */
+    .progress-container {
+      width: 100%;
+      background-color: #f3f4f6;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      transition: width 0.5s ease-in-out;
+    }
+
+    /* ==============================
+       QR CODE SECTION
+    ============================== */
+    .qr-section {
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border: 1px solid #eaeaea;
+    }
+
+    .qr-title {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .qr-code {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-code img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .qr-description {
+      margin-top: 15px;
+      color: #666;
+      font-size: 0.95rem;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .qr-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .qr-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ==============================
+       ANIMAÇÕES
+    ============================== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* ==============================
+       LINKS
+    ============================== */
+    .link {
+      display: inline-flex;
+      align-items: center;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 25px;
+      transition: color 0.3s ease;
+    }
+
+    .link:hover {
+      color: #764ba2;
+    }
+
+    .link i {
+      margin-right: 8px;
+    }
+
+    /* ==============================
+       RESPONSIVIDADE
+    ============================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 15px;
+      }
+      
+      .container {
+        border-radius: 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .content {
+        padding: 20px;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
+      
+      .question {
+        padding: 20px;
+      }
+      
+      .option {
+        padding: 12px 15px;
+      }
+      
+      .qr-code {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Quiz: Lucro Presumido</h1>
+  <div class="container fade-in">
+    <div class="header">
+      <h1>Quiz: Lucro Presumido</h1>
+      <p class="subtitle">Teste seus conhecimentos sobre o regime tributário do Lucro Presumido</p>
+    </div>
+    
+    <div class="content">
+      <!-- Nome do usuário -->
+      <div id="userSection">
+        <div class="input-group">
+          <label for="username"><i class="fas fa-user"></i> Digite seu nome:</label>
+          <input type="text" id="username" placeholder="Seu nome">
+        </div>
+        <button id="startBtn" class="btn btn-primary"><i class="fas fa-play"></i> Começar Quiz</button>
+      </div>
 
-  <!-- Nome do usuário -->
-  <div id="userSection">
-    <label for="username">Digite seu nome:</label>
-    <input type="text" id="username" placeholder="Seu nome">
-    <button id="startBtn">Começar Quiz</button>
+      <!-- QR Code Section -->
+      <div class="qr-section">
+        <div class="qr-title">Acesse este quiz online</div>
+        <div class="qr-code">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://eupessoaxt.github.io/Quiz_lucro/" alt="QR Code para o Quiz de Lucro Presumido">
+        </div>
+        <p class="qr-description">Escaneie este código com seu celular para acessar a versão online do quiz</p>
+        <a href="https://eupessoaxt.github.io/Quiz_lucro/" class="qr-link" target="_blank">https://eupessoaxt.github.io/Quiz_lucro/</a>
+      </div>
+
+      <!-- Quiz -->
+      <form id="quiz" hidden>
+        <div class="progress-container">
+          <div class="progress-bar" id="quizProgress"></div>
+        </div>
+        
+        <div class="question" data-answer="c">
+          <p>1. Qual o limite de receita bruta anual para optar pelo Lucro Presumido?</p>
+          <div class="options">
+            <div class="option">
+              <input type="radio" name="q1" value="a" id="q1a">
+              <label for="q1a">R$ 4,8 milhões</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q1" value="b" id="q1b">
+              <label for="q1b">R$ 60 milhões</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q1" value="c" id="q1c">
+              <label for="q1c">R$ 78 milhões</label>
+            </div>
+          </div>
+          <div class="feedback" id="fb1" hidden>
+            <i class="fas fa-check-circle"></i> <span></span>
+          </div>
+        </div>
+
+        <div class="question" data-answer="b">
+          <p>2. Qual a presunção de lucro para atividades de prestação de serviços em geral?</p>
+          <div class="options">
+            <div class="option">
+              <input type="radio" name="q2" value="a" id="q2a">
+              <label for="q2a">8%</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q2" value="b" id="q2b">
+              <label for="q2b">32%</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q2" value="c" id="q2c">
+              <label for="q2c">40%</label>
+            </div>
+          </div>
+          <div class="feedback" id="fb2" hidden>
+            <i class="fas fa-check-circle"></i> <span></span>
+          </div>
+        </div>
+
+        <div class="question" data-answer="a">
+          <p>3. No Lucro Presumido é possível compensar prejuízos fiscais de períodos anteriores?</p>
+          <div class="options">
+            <div class="option">
+              <input type="radio" name="q3" value="a" id="q3a">
+              <label for="q3a">Não</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q3" value="b" id="q3b">
+              <label for="q3b">Sim, até 30%</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="q3" value="c" id="q3c">
+              <label for="q3c">Sim, até 50%</label>
+            </div>
+          </div>
+          <div class="feedback" id="fb3" hidden>
+            <i class="fas fa-check-circle"></i> <span></span>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" id="submitBtn" class="btn btn-primary"><i class="fas fa-check-circle"></i> Corrigir</button>
+          <button type="reset" id="resetBtn" class="btn btn-secondary"><i class="fas fa-redo"></i> Refazer</button>
+        </div>
+      </form>
+
+      <div id="scoreArea"></div>
+
+      <a href="resultados.html" class="link"><i class="fas fa-chart-bar"></i> Ver resultados anteriores</a>
+    </div>
   </div>
-
-  <!-- Quiz -->
-  <form id="quiz" hidden>
-    <div class="question" data-answer="c">
-      <p>1. Qual o limite de receita bruta anual para optar pelo Lucro Presumido?</p>
-      <label><input type="radio" name="q1" value="a"> R$ 4,8 milhões</label><br>
-      <label><input type="radio" name="q1" value="b"> R$ 60 milhões</label><br>
-      <label><input type="radio" name="q1" value="c"> R$ 78 milhões</label><br>
-      <span class="feedback" id="fb1" hidden></span>
-    </div>
-
-    <div class="question" data-answer="b">
-      <p>2. Qual a presunção de lucro para atividades de prestação de serviços em geral?</p>
-      <label><input type="radio" name="q2" value="a"> 8%</label><br>
-      <label><input type="radio" name="q2" value="b"> 32%</label><br>
-      <label><input type="radio" name="q2" value="c"> 40%</label><br>
-      <span class="feedback" id="fb2" hidden></span>
-    </div>
-
-    <div class="question" data-answer="a">
-      <p>3. No Lucro Presumido é possível compensar prejuízos fiscais de períodos anteriores?</p>
-      <label><input type="radio" name="q3" value="a"> Não</label><br>
-      <label><input type="radio" name="q3" value="b"> Sim, até 30%</label><br>
-      <label><input type="radio" name="q3" value="c"> Sim, até 50%</label><br>
-      <span class="feedback" id="fb3" hidden></span>
-    </div>
-
-    <button type="button" id="submitBtn">Corrigir</button>
-    <button type="reset" id="resetBtn">Refazer</button>
-  </form>
-
-  <p id="scoreArea"></p>
-
-  <p><a href="resultados.html">Ver resultados anteriores</a></p>
 
   <!-- Firebase + Quiz -->
   <script type="module">
+    // O código JavaScript permanece exatamente o mesmo
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -81,6 +600,7 @@
     const submitBtn = document.getElementById('submitBtn');
     const resetBtn = document.getElementById('resetBtn');
     const scoreArea = document.getElementById('scoreArea');
+    const progressBar = document.getElementById('quizProgress');
 
     const startBtn = document.getElementById('startBtn');
     const usernameInput = document.getElementById('username');
@@ -95,6 +615,18 @@
       currentUser = name;
       userSection.hidden = true;
       quizForm.hidden = false;
+      updateProgressBar();
+    });
+
+    function updateProgressBar() {
+      const totalQuestions = document.querySelectorAll('.question').length;
+      const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+      const progress = (answeredQuestions / totalQuestions) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', updateProgressBar);
     });
 
     function gradeQuiz() {
@@ -108,11 +640,12 @@
         const correct = section.dataset.answer;
         const selected = quizForm.querySelector(`input[name="q${qNum}"]:checked`);
         const fb = document.getElementById(`fb${qNum}`);
+        const fbText = fb.querySelector('span');
 
         if (!selected) {
           fb.hidden = false;
           fb.className = 'feedback incorrect';
-          fb.textContent = 'Selecione uma alternativa.';
+          fbText.textContent = 'Selecione uma alternativa.';
           return;
         }
 
@@ -123,21 +656,31 @@
           correctCount++;
           fb.hidden = false;
           fb.className = 'feedback correct';
-          fb.textContent = explanations[qNum].correct;
+          fbText.textContent = explanations[qNum].correct;
         } else {
           fb.hidden = false;
           fb.className = 'feedback incorrect';
-          fb.textContent = explanations[qNum].wrong;
+          fbText.textContent = explanations[qNum].wrong;
         }
       });
 
       if (answered < sections.length) {
         scoreArea.textContent = `Você respondeu ${answered}/${sections.length}. Complete todas as questões.`;
+        scoreArea.className = '';
         return;
       }
 
       const scorePercent = Math.round((correctCount / sections.length) * 100);
       scoreArea.textContent = `${currentUser}, seu resultado foi: ${correctCount}/${sections.length} (${scorePercent}%)`;
+      
+      // Adicionar classe baseada no desempenho
+      if (scorePercent >= 70) {
+        scoreArea.className = 'score-excellent';
+      } else if (scorePercent >= 50) {
+        scoreArea.className = 'score-good';
+      } else {
+        scoreArea.className = 'score-regular';
+      }
 
       // Salvar no Firestore
       addDoc(collection(db, "quiz_results"), {
@@ -154,9 +697,14 @@
 
     function resetQuizVisual() {
       document.querySelectorAll('.feedback').forEach(fb => {
-        fb.hidden = true; fb.textContent = ''; fb.className = 'feedback';
+        fb.hidden = true;
+        const fbText = fb.querySelector('span');
+        if (fbText) fbText.textContent = '';
+        fb.className = 'feedback';
       });
       scoreArea.textContent = '';
+      scoreArea.className = '';
+      updateProgressBar();
     }
 
     submitBtn.addEventListener('click', gradeQuiz);
@@ -164,3 +712,4 @@
   </script>
 </body>
 </html>
+
