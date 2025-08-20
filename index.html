@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz: Lucro Presumido</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Quiz: Lucro Presumido</h1>
+
+  <!-- Nome do usuário -->
+  <div id="userSection">
+    <label for="username">Digite seu nome:</label>
+    <input type="text" id="username" placeholder="Seu nome">
+    <button id="startBtn">Começar Quiz</button>
+  </div>
+
+  <!-- Quiz -->
+  <form id="quiz" hidden>
+    <div class="question" data-answer="c">
+      <p>1. Qual o limite de receita bruta anual para optar pelo Lucro Presumido?</p>
+      <label><input type="radio" name="q1" value="a"> R$ 4,8 milhões</label><br>
+      <label><input type="radio" name="q1" value="b"> R$ 60 milhões</label><br>
+      <label><input type="radio" name="q1" value="c"> R$ 78 milhões</label><br>
+      <span class="feedback" id="fb1" hidden></span>
+    </div>
+
+    <div class="question" data-answer="b">
+      <p>2. Qual a presunção de lucro para atividades de prestação de serviços em geral?</p>
+      <label><input type="radio" name="q2" value="a"> 8%</label><br>
+      <label><input type="radio" name="q2" value="b"> 32%</label><br>
+      <label><input type="radio" name="q2" value="c"> 40%</label><br>
+      <span class="feedback" id="fb2" hidden></span>
+    </div>
+
+    <div class="question" data-answer="a">
+      <p>3. No Lucro Presumido é possível compensar prejuízos fiscais de períodos anteriores?</p>
+      <label><input type="radio" name="q3" value="a"> Não</label><br>
+      <label><input type="radio" name="q3" value="b"> Sim, até 30%</label><br>
+      <label><input type="radio" name="q3" value="c"> Sim, até 50%</label><br>
+      <span class="feedback" id="fb3" hidden></span>
+    </div>
+
+    <button type="button" id="submitBtn">Corrigir</button>
+    <button type="reset" id="resetBtn">Refazer</button>
+  </form>
+
+  <p id="scoreArea"></p>
+
+  <p><a href="resultados.html">Ver resultados anteriores</a></p>
+
+  <!-- Firebase + Quiz -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    // Config Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCYS68gCwoYltfGvUz2gc1ihRVttofj39Y",
+      authDomain: "quiz-2616a.firebaseapp.com",
+      projectId: "quiz-2616a",
+      storageBucket: "quiz-2616a.firebasestorage.app",
+      messagingSenderId: "412818192073",
+      appId: "1:412818192073:web:f04c7fc2332af9266abf18",
+      measurementId: "G-CF6HH6WJ4G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    const explanations = {
+      1: { correct: "Correto! O limite é R$ 78 milhões.", wrong: "Errado. O limite é R$ 78 milhões." },
+      2: { correct: "Acertou! Serviços em geral = 32%.", wrong: "Errado. A presunção para serviços em geral é 32%." },
+      3: { correct: "Isso aí! Não compensa prejuízos fiscais.", wrong: "Quase! No Lucro Presumido não se compensa prejuízos." }
+    };
+
+    const quizForm = document.getElementById('quiz');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const scoreArea = document.getElementById('scoreArea');
+
+    const startBtn = document.getElementById('startBtn');
+    const usernameInput = document.getElementById('username');
+    const userSection = document.getElementById('userSection');
+
+    startBtn.addEventListener('click', () => {
+      const name = usernameInput.value.trim();
+      if (!name) {
+        alert("Por favor, digite seu nome!");
+        return;
+      }
+      currentUser = name;
+      userSection.hidden = true;
+      quizForm.hidden = false;
+    });
+
+    function gradeQuiz() {
+      const sections = Array.from(document.querySelectorAll('.question'));
+      let correctCount = 0;
+      let answered = 0;
+      const results = {};
+
+      sections.forEach((section, idx) => {
+        const qNum = idx + 1;
+        const correct = section.dataset.answer;
+        const selected = quizForm.querySelector(`input[name="q${qNum}"]:checked`);
+        const fb = document.getElementById(`fb${qNum}`);
+
+        if (!selected) {
+          fb.hidden = false;
+          fb.className = 'feedback incorrect';
+          fb.textContent = 'Selecione uma alternativa.';
+          return;
+        }
+
+        answered++;
+        results[`q${qNum}`] = selected.value;
+
+        if (selected.value === correct) {
+          correctCount++;
+          fb.hidden = false;
+          fb.className = 'feedback correct';
+          fb.textContent = explanations[qNum].correct;
+        } else {
+          fb.hidden = false;
+          fb.className = 'feedback incorrect';
+          fb.textContent = explanations[qNum].wrong;
+        }
+      });
+
+      if (answered < sections.length) {
+        scoreArea.textContent = `Você respondeu ${answered}/${sections.length}. Complete todas as questões.`;
+        return;
+      }
+
+      const scorePercent = Math.round((correctCount / sections.length) * 100);
+      scoreArea.textContent = `${currentUser}, seu resultado foi: ${correctCount}/${sections.length} (${scorePercent}%)`;
+
+      // Salvar no Firestore
+      addDoc(collection(db, "quiz_results"), {
+        user: currentUser,
+        results,
+        correctCount,
+        total: sections.length,
+        scorePercent,
+        timestamp: new Date()
+      }).then(() => {
+        console.log("✅ Resultado salvo no Firestore");
+      }).catch(err => console.error("❌ Erro ao salvar", err));
+    }
+
+    function resetQuizVisual() {
+      document.querySelectorAll('.feedback').forEach(fb => {
+        fb.hidden = true; fb.textContent = ''; fb.className = 'feedback';
+      });
+      scoreArea.textContent = '';
+    }
+
+    submitBtn.addEventListener('click', gradeQuiz);
+    resetBtn.addEventListener('click', () => setTimeout(resetQuizVisual, 0));
+  </script>
+</body>
+</html>

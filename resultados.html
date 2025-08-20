@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resultados do Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Resultados anteriores</h1>
+  <ul id="resultsList"><li>Carregando...</li></ul>
+
+  <p><a href="index.html">Voltar para o quiz</a></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCYS68gCwoYltfGvUz2gc1ihRVttofj39Y",
+      authDomain: "quiz-2616a.firebaseapp.com",
+      projectId: "quiz-2616a",
+      storageBucket: "quiz-2616a.firebasestorage.app",
+      messagingSenderId: "412818192073",
+      appId: "1:412818192073:web:f04c7fc2332af9266abf18",
+      measurementId: "G-CF6HH6WJ4G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadResults() {
+      const resultsList = document.getElementById("resultsList");
+      resultsList.innerHTML = "<li>Carregando...</li>";
+
+      try {
+        const q = query(collection(db, "quiz_results"), orderBy("timestamp", "desc"), limit(10));
+        const querySnapshot = await getDocs(q);
+
+        resultsList.innerHTML = "";
+
+        querySnapshot.forEach(doc => {
+          const data = doc.data();
+          const li = document.createElement("li");
+          li.textContent = `${data.user}: ${data.correctCount}/${data.total} (${data.scorePercent}%) em ${new Date(data.timestamp.seconds * 1000).toLocaleString()}`;
+          resultsList.appendChild(li);
+        });
+
+        if (resultsList.innerHTML === "") {
+          resultsList.innerHTML = "<li>Nenhum resultado encontrado.</li>";
+        }
+      } catch (e) {
+        console.error("Erro ao carregar resultados:", e);
+        resultsList.innerHTML = "<li>Erro ao carregar resultados.</li>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadResults);
+  </script>
+</body>
+</html>
