@@ -4,13 +4,342 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Resultados do Quiz</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ==============================
+       RESET & FONTE GLOBAL
+    ============================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    /* ==============================
+       CONTAINER PRINCIPAL
+    ============================== */
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .header {
+      padding: 30px;
+      text-align: center;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    /* ==============================
+       TÍTULOS
+    ============================== */
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: #333;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    /* ==============================
+       LISTA DE RESULTADOS
+    ============================== */
+    .results-container {
+      margin: 30px 0;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .results-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .results-count {
+      background: #667eea;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    #resultsList {
+      list-style: none;
+    }
+
+    #resultsList li {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 15px;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #resultsList li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-user {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .result-score {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .result-percentage {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .result-details {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .result-date {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    /* Cores baseadas no desempenho */
+    .score-high {
+      color: #0c6b3f;
+    }
+
+    .score-medium {
+      color: #d97706;
+    }
+
+    .score-low {
+      color: #c53030;
+    }
+
+    /* ==============================
+       ESTADOS DE CARREGAMENTO E ERRO
+    ============================== */
+    .loading, .error, .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .loading i, .error i, .empty i {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+
+    .error i {
+      color: #c53030;
+    }
+
+    .empty i {
+      color: #d97706;
+    }
+
+    /* ==============================
+       BOTÕES
+    ============================== */
+    .btn {
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn i {
+      margin-right: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* ==============================
+       LINKS
+    ============================== */
+    .link {
+      display: inline-flex;
+      align-items: center;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 25px;
+      transition: color 0.3s ease;
+    }
+
+    .link:hover {
+      color: #764ba2;
+    }
+
+    .link i {
+      margin-right: 8px;
+    }
+
+    /* ==============================
+       ANIMAÇÕES
+    ============================== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* ==============================
+       RESPONSIVIDADE
+    ============================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 15px;
+      }
+      
+      .container {
+        border-radius: 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .content {
+        padding: 20px;
+      }
+      
+      #resultsList li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .result-score {
+        align-items: flex-start;
+      }
+      
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Resultados anteriores</h1>
-  <ul id="resultsList"><li>Carregando...</li></ul>
+  <div class="container fade-in">
+    <div class="header">
+      <h1>Resultados do Quiz</h1>
+      <p class="subtitle">Confira os desempenhos anteriores dos participantes</p>
+    </div>
+    
+    <div class="content">
+      <div class="results-container">
+        <div class="results-header">
+          <div class="results-title">Últimos resultados</div>
+          <div class="results-count">10 mais recentes</div>
+        </div>
+        
+        <ul id="resultsList">
+          <li class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Carregando resultados...</span>
+          </li>
+        </ul>
+      </div>
 
-  <p><a href="index.html">Voltar para o quiz</a></p>
+      <a href="index.html" class="link"><i class="fas fa-arrow-left"></i> Voltar para o quiz</a>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -29,9 +358,20 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    function getScoreClass(percent) {
+      if (percent >= 70) return "score-high";
+      if (percent >= 50) return "score-medium";
+      return "score-low";
+    }
+
     async function loadResults() {
       const resultsList = document.getElementById("resultsList");
-      resultsList.innerHTML = "<li>Carregando...</li>";
+      resultsList.innerHTML = `
+        <li class="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Carregando resultados...</span>
+        </li>
+      `;
 
       try {
         const q = query(collection(db, "quiz_results"), orderBy("timestamp", "desc"), limit(10));
@@ -39,19 +379,43 @@
 
         resultsList.innerHTML = "";
 
+        if (querySnapshot.empty) {
+          resultsList.innerHTML = `
+            <li class="empty">
+              <i class="fas fa-inbox"></i>
+              <span>Nenhum resultado encontrado.</span>
+            </li>
+          `;
+          return;
+        }
+
         querySnapshot.forEach(doc => {
           const data = doc.data();
+          const scoreClass = getScoreClass(data.scorePercent);
+          const date = new Date(data.timestamp.seconds * 1000);
+          
           const li = document.createElement("li");
-          li.textContent = `${data.user}: ${data.correctCount}/${data.total} (${data.scorePercent}%) em ${new Date(data.timestamp.seconds * 1000).toLocaleString()}`;
+          li.innerHTML = `
+            <div class="result-user">
+              <i class="fas fa-user"></i> ${data.user}
+            </div>
+            <div class="result-score">
+              <div class="result-percentage ${scoreClass}">${data.scorePercent}%</div>
+              <div class="result-details">${data.correctCount}/${data.total} corretas</div>
+              <div class="result-date">${date.toLocaleDateString()} às ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            </div>
+          `;
           resultsList.appendChild(li);
         });
 
-        if (resultsList.innerHTML === "") {
-          resultsList.innerHTML = "<li>Nenhum resultado encontrado.</li>";
-        }
       } catch (e) {
         console.error("Erro ao carregar resultados:", e);
-        resultsList.innerHTML = "<li>Erro ao carregar resultados.</li>";
+        resultsList.innerHTML = `
+          <li class="error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Erro ao carregar resultados.</span>
+          </li>
+        `;
       }
     }
 
